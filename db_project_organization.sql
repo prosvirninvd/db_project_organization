@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Мар 30 2023 г., 08:16
+-- Время создания: Апр 06 2023 г., 05:17
 -- Версия сервера: 10.4.24-MariaDB
 -- Версия PHP: 8.1.6
 
@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `attributes` (
   `id_attribute` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL
+  `name` varchar(255) CHARACTER SET utf8 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
