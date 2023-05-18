@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Апр 06 2023 г., 05:17
+-- Время создания: Май 18 2023 г., 06:06
 -- Версия сервера: 10.4.24-MariaDB
 -- Версия PHP: 8.1.6
 
@@ -21,6 +21,18 @@ SET time_zone = "+00:00";
 -- База данных: `db_project_organization`
 --
 
+DELIMITER $$
+--
+-- Процедуры
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `select_data_source` (IN `t_name` VARCHAR(255))   IF (t_name = 'employees') THEN
+SELECT employees.id_employee `value`, concat_ws(" ", employees.last_name, employees.first_name, employees.middle_name) `display` from employees;
+ELSEIF (t_name = 'categories') THEN
+SELECT categories.id_category `value`, categories.name `display` FROM categories;
+END IF$$
+
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -32,6 +44,14 @@ CREATE TABLE `attributes` (
   `name` varchar(255) CHARACTER SET utf8 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Дамп данных таблицы `attributes`
+--
+
+INSERT INTO `attributes` (`id_attribute`, `name`) VALUES
+(1, 'Обслуживаемое оборудование'),
+(2, 'Авторские свидетельства');
+
 -- --------------------------------------------------------
 
 --
@@ -39,8 +59,8 @@ CREATE TABLE `attributes` (
 --
 
 CREATE TABLE `attribute_values` (
-  `id` int(11) NOT NULL,
-  `employee_category_id` int(11) NOT NULL,
+  `id_index` int(11) NOT NULL,
+  `employee_id` int(11) NOT NULL,
   `attribute_id` int(11) NOT NULL,
   `attribute_value` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -56,6 +76,16 @@ CREATE TABLE `categories` (
   `name` varchar(255) CHARACTER SET utf8 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Дамп данных таблицы `categories`
+--
+
+INSERT INTO `categories` (`id_category`, `name`) VALUES
+(1, 'Конструктор'),
+(2, 'Инженер'),
+(3, 'Техник'),
+(4, 'Лаборант');
+
 -- --------------------------------------------------------
 
 --
@@ -68,6 +98,13 @@ CREATE TABLE `contracts` (
   `deadline` date NOT NULL DEFAULT curdate(),
   `contract_cost` decimal(10,2) NOT NULL DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Дамп данных таблицы `contracts`
+--
+
+INSERT INTO `contracts` (`id_contract`, `conclusion_date`, `deadline`, `contract_cost`) VALUES
+(1, '0000-00-00', '0000-00-00', '0.00');
 
 -- --------------------------------------------------------
 
@@ -98,7 +135,7 @@ CREATE TABLE `contract_head` (
 --
 
 CREATE TABLE `contract_project` (
-  `id` int(11) NOT NULL,
+  `id_index` int(11) NOT NULL,
   `contract_id` int(11) NOT NULL,
   `project_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -115,6 +152,14 @@ CREATE TABLE `customers` (
   `phone` varchar(18) CHARACTER SET utf8 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Дамп данных таблицы `customers`
+--
+
+INSERT INTO `customers` (`id_customer`, `name`, `phone`) VALUES
+(1, '111', '099-99-99'),
+(2, '222', '099-99-98');
+
 -- --------------------------------------------------------
 
 --
@@ -126,6 +171,16 @@ CREATE TABLE `departments` (
   `name` varchar(255) CHARACTER SET utf8 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Дамп данных таблицы `departments`
+--
+
+INSERT INTO `departments` (`id_department`, `name`) VALUES
+(1, 'Первый'),
+(2, 'Второй'),
+(3, 'Третий'),
+(4, 'Четвертый');
+
 -- --------------------------------------------------------
 
 --
@@ -136,6 +191,13 @@ CREATE TABLE `department_head` (
   `employee_id` int(11) NOT NULL,
   `department_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Дамп данных таблицы `department_head`
+--
+
+INSERT INTO `department_head` (`employee_id`, `department_id`) VALUES
+(5, 1);
 
 -- --------------------------------------------------------
 
@@ -149,8 +211,20 @@ CREATE TABLE `employees` (
   `first_name` varchar(255) CHARACTER SET utf8 NOT NULL,
   `middle_name` varchar(255) CHARACTER SET utf8 NOT NULL,
   `date_of_birth` date NOT NULL DEFAULT '1970-01-01',
-  `phone` varchar(18) CHARACTER SET utf8 NOT NULL
+  `phone` varchar(9) CHARACTER SET utf8 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Дамп данных таблицы `employees`
+--
+
+INSERT INTO `employees` (`id_employee`, `last_name`, `first_name`, `middle_name`, `date_of_birth`, `phone`) VALUES
+(1, 'Иванов', 'Иван', 'Иванович', '1988-03-22', '100-00-01'),
+(2, 'Петров', 'Петр', 'Петрович', '1987-04-16', '100-00-02'),
+(3, 'Сергеев', 'Сергей', 'Сергеевич', '1989-01-20', '100-00-03'),
+(4, 'Максимов', 'Максим', 'Максимович', '1965-01-26', '100-00-04'),
+(5, 'Павлов', 'Павел', 'Павлович', '1977-02-12', '100-00-05'),
+(6, 'Романов', 'Роман', 'Романович', '1971-07-04', '100-00-06');
 
 -- --------------------------------------------------------
 
@@ -162,6 +236,16 @@ CREATE TABLE `employee_category` (
   `employee_id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Дамп данных таблицы `employee_category`
+--
+
+INSERT INTO `employee_category` (`employee_id`, `category_id`) VALUES
+(4, 1),
+(1, 2),
+(3, 3),
+(2, 4);
 
 -- --------------------------------------------------------
 
@@ -181,7 +265,7 @@ CREATE TABLE `employee_department` (
 --
 
 CREATE TABLE `employee_work` (
-  `id` int(11) NOT NULL,
+  `id_index` int(11) NOT NULL,
   `employee_id` int(11) NOT NULL,
   `work_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -221,7 +305,8 @@ CREATE TABLE `works` (
   `id_work` int(11) NOT NULL,
   `begin_date` date DEFAULT curdate(),
   `end_date` date DEFAULT curdate(),
-  `work_cost` decimal(10,2) DEFAULT NULL
+  `work_cost` decimal(10,2) DEFAULT NULL,
+  `work_type_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -233,17 +318,6 @@ CREATE TABLE `works` (
 CREATE TABLE `work_project` (
   `work_id` int(11) NOT NULL,
   `project_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Структура таблицы `work_type`
---
-
-CREATE TABLE `work_type` (
-  `work_id` int(11) NOT NULL,
-  `type_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -271,8 +345,8 @@ ALTER TABLE `attributes`
 -- Индексы таблицы `attribute_values`
 --
 ALTER TABLE `attribute_values`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `employee_category_id` (`employee_category_id`),
+  ADD PRIMARY KEY (`id_index`),
+  ADD KEY `employee_category_id` (`employee_id`),
   ADD KEY `attribute_id` (`attribute_id`);
 
 --
@@ -305,7 +379,7 @@ ALTER TABLE `contract_head`
 -- Индексы таблицы `contract_project`
 --
 ALTER TABLE `contract_project`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`id_index`),
   ADD KEY `contract_id` (`contract_id`),
   ADD KEY `project_id` (`project_id`);
 
@@ -332,7 +406,8 @@ ALTER TABLE `department_head`
 -- Индексы таблицы `employees`
 --
 ALTER TABLE `employees`
-  ADD PRIMARY KEY (`id_employee`);
+  ADD PRIMARY KEY (`id_employee`),
+  ADD UNIQUE KEY `phone` (`phone`);
 
 --
 -- Индексы таблицы `employee_category`
@@ -352,7 +427,7 @@ ALTER TABLE `employee_department`
 -- Индексы таблицы `employee_work`
 --
 ALTER TABLE `employee_work`
-  ADD PRIMARY KEY (`id`),
+  ADD PRIMARY KEY (`id_index`),
   ADD KEY `work_id` (`work_id`),
   ADD KEY `employee_id` (`employee_id`);
 
@@ -373,7 +448,8 @@ ALTER TABLE `project_head`
 -- Индексы таблицы `works`
 --
 ALTER TABLE `works`
-  ADD PRIMARY KEY (`id_work`);
+  ADD PRIMARY KEY (`id_work`),
+  ADD KEY `work_type_id` (`work_type_id`);
 
 --
 -- Индексы таблицы `work_project`
@@ -381,13 +457,6 @@ ALTER TABLE `works`
 ALTER TABLE `work_project`
   ADD PRIMARY KEY (`work_id`),
   ADD KEY `project_id` (`project_id`);
-
---
--- Индексы таблицы `work_type`
---
-ALTER TABLE `work_type`
-  ADD PRIMARY KEY (`work_id`),
-  ADD KEY `type_id` (`type_id`);
 
 --
 -- Индексы таблицы `work_types`
@@ -403,55 +472,55 @@ ALTER TABLE `work_types`
 -- AUTO_INCREMENT для таблицы `attributes`
 --
 ALTER TABLE `attributes`
-  MODIFY `id_attribute` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_attribute` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `attribute_values`
 --
 ALTER TABLE `attribute_values`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_index` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id_category` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_category` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `contracts`
 --
 ALTER TABLE `contracts`
-  MODIFY `id_contract` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_contract` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT для таблицы `contract_project`
 --
 ALTER TABLE `contract_project`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_index` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id_customer` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_customer` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT для таблицы `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `id_department` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_department` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT для таблицы `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id_employee` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_employee` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT для таблицы `employee_work`
 --
 ALTER TABLE `employee_work`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_index` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT для таблицы `projects`
@@ -479,7 +548,7 @@ ALTER TABLE `work_types`
 -- Ограничения внешнего ключа таблицы `attribute_values`
 --
 ALTER TABLE `attribute_values`
-  ADD CONSTRAINT `attribute_values_ibfk_1` FOREIGN KEY (`employee_category_id`) REFERENCES `employee_category` (`employee_id`),
+  ADD CONSTRAINT `attribute_values_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employee_category` (`employee_id`),
   ADD CONSTRAINT `attribute_values_ibfk_2` FOREIGN KEY (`attribute_id`) REFERENCES `attributes` (`id_attribute`);
 
 --
@@ -539,18 +608,17 @@ ALTER TABLE `project_head`
   ADD CONSTRAINT `project_head_ibfk_2` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id_employee`);
 
 --
+-- Ограничения внешнего ключа таблицы `works`
+--
+ALTER TABLE `works`
+  ADD CONSTRAINT `works_ibfk_1` FOREIGN KEY (`work_type_id`) REFERENCES `work_types` (`id_type`);
+
+--
 -- Ограничения внешнего ключа таблицы `work_project`
 --
 ALTER TABLE `work_project`
   ADD CONSTRAINT `work_project_ibfk_1` FOREIGN KEY (`work_id`) REFERENCES `works` (`id_work`),
   ADD CONSTRAINT `work_project_ibfk_2` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id_project`);
-
---
--- Ограничения внешнего ключа таблицы `work_type`
---
-ALTER TABLE `work_type`
-  ADD CONSTRAINT `work_type_ibfk_1` FOREIGN KEY (`work_id`) REFERENCES `works` (`id_work`),
-  ADD CONSTRAINT `work_type_ibfk_2` FOREIGN KEY (`type_id`) REFERENCES `work_types` (`id_type`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
