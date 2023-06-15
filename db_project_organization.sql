@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1
--- Время создания: Май 18 2023 г., 06:06
+-- Время создания: Июн 15 2023 г., 05:33
 -- Версия сервера: 10.4.24-MariaDB
 -- Версия PHP: 8.1.6
 
@@ -20,18 +20,6 @@ SET time_zone = "+00:00";
 --
 -- База данных: `db_project_organization`
 --
-
-DELIMITER $$
---
--- Процедуры
---
-CREATE DEFINER=`root`@`localhost` PROCEDURE `select_data_source` (IN `t_name` VARCHAR(255))   IF (t_name = 'employees') THEN
-SELECT employees.id_employee `value`, concat_ws(" ", employees.last_name, employees.first_name, employees.middle_name) `display` from employees;
-ELSEIF (t_name = 'categories') THEN
-SELECT categories.id_category `value`, categories.name `display` FROM categories;
-END IF$$
-
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -104,7 +92,7 @@ CREATE TABLE `contracts` (
 --
 
 INSERT INTO `contracts` (`id_contract`, `conclusion_date`, `deadline`, `contract_cost`) VALUES
-(1, '0000-00-00', '0000-00-00', '0.00');
+(3, '0000-00-00', '0000-00-00', '0.00');
 
 -- --------------------------------------------------------
 
@@ -158,7 +146,8 @@ CREATE TABLE `customers` (
 
 INSERT INTO `customers` (`id_customer`, `name`, `phone`) VALUES
 (1, '111', '099-99-99'),
-(2, '222', '099-99-98');
+(2, '222', '099-99-98'),
+(3, '333', '000-00-00');
 
 -- --------------------------------------------------------
 
@@ -223,7 +212,7 @@ INSERT INTO `employees` (`id_employee`, `last_name`, `first_name`, `middle_name`
 (2, 'Петров', 'Петр', 'Петрович', '1987-04-16', '100-00-02'),
 (3, 'Сергеев', 'Сергей', 'Сергеевич', '1989-01-20', '100-00-03'),
 (4, 'Максимов', 'Максим', 'Максимович', '1965-01-26', '100-00-04'),
-(5, 'Павлов', 'Павел', 'Павлович', '1977-02-12', '100-00-05'),
+(5, 'Павлов', 'Павел', 'Павлович', '1977-02-11', '100-00-05'),
 (6, 'Романов', 'Роман', 'Романович', '1971-07-04', '100-00-06');
 
 -- --------------------------------------------------------
@@ -346,8 +335,8 @@ ALTER TABLE `attributes`
 --
 ALTER TABLE `attribute_values`
   ADD PRIMARY KEY (`id_index`),
-  ADD KEY `employee_category_id` (`employee_id`),
-  ADD KEY `attribute_id` (`attribute_id`);
+  ADD KEY `attribute_id` (`attribute_id`),
+  ADD KEY `attribute_values_ibfk_1` (`employee_id`);
 
 --
 -- Индексы таблицы `categories`
@@ -484,13 +473,13 @@ ALTER TABLE `attribute_values`
 -- AUTO_INCREMENT для таблицы `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id_category` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_category` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT для таблицы `contracts`
 --
 ALTER TABLE `contracts`
-  MODIFY `id_contract` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_contract` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT для таблицы `contract_project`
@@ -502,7 +491,7 @@ ALTER TABLE `contract_project`
 -- AUTO_INCREMENT для таблицы `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id_customer` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_customer` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT для таблицы `departments`
@@ -514,7 +503,7 @@ ALTER TABLE `departments`
 -- AUTO_INCREMENT для таблицы `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id_employee` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_employee` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT для таблицы `employee_work`
@@ -548,7 +537,7 @@ ALTER TABLE `work_types`
 -- Ограничения внешнего ключа таблицы `attribute_values`
 --
 ALTER TABLE `attribute_values`
-  ADD CONSTRAINT `attribute_values_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employee_category` (`employee_id`),
+  ADD CONSTRAINT `attribute_values_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id_employee`),
   ADD CONSTRAINT `attribute_values_ibfk_2` FOREIGN KEY (`attribute_id`) REFERENCES `attributes` (`id_attribute`);
 
 --
